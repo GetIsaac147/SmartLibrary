@@ -1,39 +1,66 @@
-import { createBook, getBooks } from "./books"
+import { auth, db } from "./auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { createBook, getBooks } from "./books.js";
 
-const form = document.getElementById("bookForm")
+onAuthStateChanged(auth, async (user) => {
+    const navName = document.getElementById('navUserName');
+    const currentPath = window.location.pathname;
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault()
+    if (user) {
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists() && navName) {
+                navName.textContent = userDoc.data().nombre;
+            }
+        } catch (error) {
+            console.error("Error al cargar perfil:", error);
+        }
 
-    const title = document.getElementById("title").value
-    const isbn = document.getElementById("isbn").value
-    const author = document.getElementById("author").value
-    const category = document.getElementById("category").value
-    const totalCopies = parseInt(document.getElementById("totalCopies").value)
-    const available = parseInt(document.getElementById("available").value)
-
-    const book = {
-        title: document.getElementById("title").value,
-        isbn: document.getElementById("isbn").value,
-        author: document.getElementById("author").value,
-        category: document.getElementById("category").value,
-        totalCopies: parseInt(document.getElementById("totalCopies").value),
-        available: parseInt(document.getElementById("available").value)
+        if (currentPath.includes("login.html") || currentPath.includes("register.html")) {
+            window.location.href = "dashboard.html";
+        }
+    } else {
+        if (currentPath.includes("dashboard.html")) {
+            window.location.href = "login.html";
+        }
     }
+});
 
-    await createBook(book)
-})
+const form = document.getElementById("bookForm");
+
+if (form) {
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const book = {
+            title: document.getElementById("title").value,
+            isbn: document.getElementById("isbn").value,
+            author: document.getElementById("author").value,
+            category: document.getElementById("category").value,
+            totalCopies: parseInt(document.getElementById("totalCopies").value),
+            available: parseInt(document.getElementById("available").value)
+        };
+
+        await createBook(book);
+        loadBooks(); 
+    });
+}
 
 async function loadBooks() {
-    const books = await getBooks()
-    const container = document.getElementById("booksContainer")
-    container.innerHTML = ""
+    const books = await getBooks();
+    const container = document.getElementById("booksContainer");
+    if (!container) return;
+    
+    container.innerHTML = "";
     books.forEach((book) => {
         container.innerHTML += `
         <div class="book-card">
             <h3>${book.title}</h3>
             <p>${book.author}</p>
             <button class="delete-btn" data-id="${book.id}">Eliminar</button>
-        </div>`
-    })
+        </div>`;
+    });
 }
+
+document.addEventListener("DOMContentLoaded", loadBooks);
