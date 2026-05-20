@@ -162,20 +162,27 @@ button:hover{
     <p class="link">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
 </div>
 
-<script>
-document.getElementById("registerForm").addEventListener("submit", function(e){
+<script type="module">
+import { registrarLector } from "./assets/js/auth.js";
+const registerForm = document.getElementById("registerForm");
+
+registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    let name = document.getElementById("name").value;
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
-
-    let user = { name, email, password };
-
-    localStorage.setItem("user", JSON.stringify(user));
-
-    alert("Cuenta creada con éxito 🚀");
-    window.location.href = "login.html";
+    
+    const data = {
+        nombre: document.getElementById("name").value
+    };
+    
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    
+    try {
+        await registrarLector(email, password, data);
+        alert("Cuenta creada con éxito 🚀");
+        window.location.href = "index.html";
+    } catch(error) {
+        alert(error.message);
+    }
 });
 </script>
 

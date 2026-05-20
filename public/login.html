@@ -161,19 +161,21 @@ button:hover{
     <p class="link">¿No tienes cuenta? <a href="register.html">Regístrate</a></p>
 </div>
 
-<script>
-document.getElementById("loginForm").addEventListener("submit", function(e){
+<script type="module">
+import { loginUser } from "./assets/js/auth.js";
+document.getElementById("loginForm").addEventListener("submit", async function(e){
+
     e.preventDefault();
 
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;
 
-    let user = JSON.parse(localStorage.getItem("user"));
-
-    if(user && user.email === email && user.password === password){
-        alert("Bienvenido " + user.name + " 📚");
-    }else{
-        alert("Datos incorrectos ");
+    try {
+        await loginUser(email, password);
+        alert("Bienvenido 📚");
+        window.location.href = "dashboard.html";
+    } catch(error) {
+        alert("Datos incorrectos");
     }
 });
 </script>

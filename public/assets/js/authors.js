@@ -1,5 +1,5 @@
 import { db } from "./firebase.js"
-import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore"
+import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
 const authorsCollectionRef = collection(db, "authors")
 
