@@ -1,51 +1,46 @@
 import { db } from "./firebase.js"
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore"
 
-const booksCollectionRef = collection(db, "books")
+const authorsCollectionRef = collection(db, "authors")
 
-export async function createBook(book) {
+export async function createAuthor(auhtor) {
     try {
-        await addDoc(booksCollectionRef, {
-            title : book.title,
-            isbn : book.isbn,
-            author : book.author,
-            category : book.category,
-            totalCopies : book.totalCopies,
-            available : book.available,
-            status: "available", 
-            createdAt: new Date(),
-            updatedAt: new Date()
+        await addDoc(authorCollectionRef, {
+            name : author.name,
+            lastName : author.lastName,
+            createdAt : new Date(),
+            updatedAt : new Date()
         });
-        alert("Libro agregado")
+        alert("Autor agregado")
     } catch (error) {
-        console.error("Error al agregar el libro: ", error)
-        alert("Error al agregar el libro")
+        console.error("Error al agregar autor: ", error)
+        alert("Error al agregar autor")
     }
 }
 
-export async function getBooks() {
+export async function getAuthros() {
     try {
-        const querySnapshot = await getDocs(booksCollectionRef)
-        let books = []
+        const querySnapshot = await getDocs(authorCollectionRef)
+        let authors = []
         querySnapshot.forEach((doc) => {
-            books.push({ 
+            authors.push({ 
                 id: doc.id, 
                 ...doc.data() 
             })
         })
-        return books
+        return authors
     } catch (error) {
-        console.error("Error al obtener los libros: ", error)
-        alert("Error al obtener los libros")
+        console.error("Error al obtener autores: ", error)
+        alert("Error al obtener los autores")
     }
 }
 
-export async function deleteBook(bookId) {
+export async function deleteAuthor(authorId) {
     try {
-        await deleteDoc(doc(db, "books", bookId))
-        alert("Libro eliminado")
+        await deleteDoc(doc(db, "authors", authorId))
+        alert("Autor eliminado")
     } catch (error) {
-        console.error("Error al eliminar el libro: ", error)
-        alert("Error al eliminar el libro")
+        console.error("Error al eliminar autor: ", error)
+        alert("Error al eliminar autor")
     }
 }
