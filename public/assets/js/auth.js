@@ -12,6 +12,8 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+export const ADMIN_EMAIL = "admin@admin.com";
+
 export async function registrarLector(email, password, data) {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;

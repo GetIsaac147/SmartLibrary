@@ -33,7 +33,17 @@
 </div>
 
 <script type="module">
-import { loginUser } from "./assets/js/auth.js";
+import { loginUser, observarSesion, ADMIN_EMAIL } from "./assets/js/auth.js";
+
+observarSesion((user) => {
+  if (!user) return;
+  if (user.email === ADMIN_EMAIL) {
+    window.location.href = "dashboard-admin.html";
+  } else {
+    window.location.href = "dashboard.html";
+  }
+});
+
 document.getElementById("loginForm").addEventListener("submit", async function(e){
 
     e.preventDefault();
@@ -43,8 +53,6 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
 
     try {
         await loginUser(email, password);
-        alert("Bienvenido 📚");
-        window.location.href = "dashboard.html";
     } catch(error) {
         alert("Datos incorrectos");
     }
