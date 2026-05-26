@@ -4,7 +4,8 @@ import {
     getDocs, 
     addDoc, 
     deleteDoc, 
-    doc 
+    doc,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
 const booksCollectionRef = collection(db, "books")
@@ -53,5 +54,19 @@ export async function deleteBook(bookId) {
     } catch (error) {
         console.error("Error al eliminar el libro: ", error)
         alert("Error al eliminar el libro")
+    }
+}
+
+export async function updateBook(bookId, updatedData) {
+    try {
+        const bookRef = doc(db, "books", bookId);
+        await updateDoc(bookRef, {
+            ...updatedData,
+            updatedAt: new Date()
+        });
+        return true;
+    } catch (error) {
+        console.error("Error al actualizar:", error);
+        return false;
     }
 }
