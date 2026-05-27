@@ -15,11 +15,13 @@
       border: 1px solid var(--glass-border);
     }
     .book-table-wrap table { margin-bottom: 0; background: transparent; }
-    .book-table-wrap thead {
-      background: linear-gradient(45deg, var(--accent2), var(--accent));
+    .book-table-wrap thead,
+    .book-table-wrap thead tr,
+    .book-table-wrap thead tr th {
+      background: linear-gradient(45deg, var(--accent2), var(--accent)) !important;
     }
     .book-table-wrap thead th {
-      color: #fff;
+      color: #fff !important;
       font-weight: 600;
       font-size: 0.78rem;
       letter-spacing: 0.06em;
@@ -111,7 +113,7 @@
       flex-shrink: 0;
     }
     .stat-pill-label { font-size: 0.75rem; color: var(--text-muted); }
-    .stat-pill-value { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .stat-pill-value { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
 
     .section-kicker {
       font-size: 0.72rem;
@@ -144,8 +146,6 @@
   </style>
 </head>
 <body class="dashboard-page">
-
-  
 
   <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
     <div class="container">
@@ -245,7 +245,6 @@
                 </button>
               </div>
 
-              
               <div id="booksAlert"   class="alert alert-danger  d-none" role="alert"></div>
               <div id="booksSuccess" class="alert alert-success d-none" role="alert"></div>
 
@@ -274,17 +273,7 @@
                 <div class="book-table-wrap">
                   <table class="table table-hover">
                     <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Título</th>
-                        <th>Autor</th>
-                        <th>ISBN</th>
-                        <th>Categoría</th>
-                        <th>Total</th>
-                        <th>Disponibles</th>
-                        <th>Estado</th>
-                        <th class="text-center">Acciones</th>
-                      </tr>
+                      <tr></tr>
                     </thead>
                     <tbody id="booksTbody"></tbody>
                   </table>
