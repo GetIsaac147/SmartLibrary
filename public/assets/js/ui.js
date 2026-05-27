@@ -33,4 +33,4 @@ export function renderBooksTable(books, container, onDelete, onEdit) {
         
         container.appendChild(tr);
     });
-}
+}git add .

@@ -1,95 +1,74 @@
 import { auth, db } from "./firebase.js";
-import { createBook, getBooks, deleteBook } from "./books.js";
-import { logoutUser, observarSesion } from "./auth.js";
+import { getBooks } from "./books.js";
+import { logoutUser, ADMIN_EMAILS } from "./auth.js"; 
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { onAuthStateChanged,  signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc,  getDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// Constantes de usuario
 const navUserName = document.getElementById("navUserName");
 const userName = document.getElementById("userName");
 const profileUserName = document.getElementById("profileUserName");
 const userEmail = document.getElementById("userEmail");
-
-// constantes de libros
-const form = document.getElementById("bookForm");
 const booksContainer = document.getElementById("booksContainer");
 const logoutBtn = document.getElementById("logoutBtn");
 
-onAuthStateChanged(auth, async(user) => {
-
-  if(!user){
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
     window.location.href = "login.html";
+    return;
+  }
+
+  if (ADMIN_EMAILS.includes(user.email)) {
+    window.location.href = "dashboard-admin.html";
     return;
   }
 
   try {
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
-
-    if(userSnap.exists()){
+    if (userSnap.exists()) {
       const data = userSnap.data();
-      navUserName.textContent = data.nombre || "Usuario";
-      userName.textContent = data.nombre || "Usuario";
-      profileUserName.textContent = data.nombre || "Usuario";
-      userEmail.textContent = user.email;
-    } else {
-      navUserName.textContent = "Usuario";
-      userName.textContent = "Usuario";
-      profileUserName.textContent = "Usuario";
-      userEmail.textContent = user.email;
+      if(navUserName) navUserName.textContent = data.nombre || "Usuario";
+      if(userName) userName.textContent = data.nombre || "Usuario";
+      if(profileUserName) profileUserName.textContent = data.nombre || "Usuario";
+      if(userEmail) userEmail.textContent = user.email;
     }
-  } catch(error){
-    console.error(error);
+  } catch (error) {
+    console.error("Error al obtener perfil:", error);
   }
 });
 
 async function cargarLibros() {
+    if (!booksContainer) return;
+
     const books = await getBooks();
-    
     booksContainer.innerHTML = "";
     
+    if (books.length === 0) {
+        booksContainer.innerHTML = "<p class='text-center text-muted'>No hay libros disponibles en este momento.</p>";
+        return;
+    }
+
     books.forEach((book) => {
         booksContainer.innerHTML += `
             <div class="card p-3 mb-3">
-                <h4>${book.title}</h4>
+                <h4 class="text-white">${book.title}</h4>
                 <p><strong>Autor:</strong> ${book.author}</p>
-                <p><strong>ISBN:</strong> ${book.isbn}</p>
-                <button class="btn btn-danger delete-btn" data-id="${book.id}">
-                    Eliminar
-                </button>
+                <p><strong>Categoría:</strong> <span class="badge bg-info">${book.category || 'General'}</span></p>
+                <div class="d-grid mt-2">
+                    <button class="btn btn-outline-primary btn-sm">Solicitar Préstamo</button>
+                </div>
             </div>
         `;
     });
+}
 
-    document.querySelectorAll(".delete-btn").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-            await deleteBook(btn.dataset.id);
-            await cargarLibros();
-        });
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        await logoutUser();
+        window.location.href = "login.html";
     });
 }
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    
-    const book = {
-        title: document.getElementById("title").value,
-        isbn: document.getElementById("isbn").value,
-        author: document.getElementById("author").value,
-        category: document.getElementById("category").value,
-        totalCopies: parseInt(document.getElementById("totalCopies").value),
-        available: parseInt(document.getElementById("available").value)
-    };
-
-    await createBook(book);
-    form.reset();
-    await cargarLibros();
-});
-
-logoutBtn.addEventListener("click", async () => {
-    await logoutUser();
-    window.location.href = "login.html";
-});
-
-cargarLibros();
+if (booksContainer) {
+    cargarLibros();
+}

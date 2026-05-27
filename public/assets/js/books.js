@@ -13,20 +13,20 @@ const booksCollectionRef = collection(db, "books")
 export async function createBook(book) {
     try {
         await addDoc(booksCollectionRef, {
-            title : book.title,
-            isbn : book.isbn,
-            author : book.author,
-            category : book.category,
-            totalCopies : book.totalCopies,
-            available : book.available,
-            status: "available", 
+            title: book.title,
+            isbn: book.isbn,
+            author: book.author,
+            category: book.category,
+            totalCopies: book.totalCopies,
+            available: book.available,
+            status: "available",
             createdAt: new Date(),
             updatedAt: new Date()
         });
-        alert("Libro agregado")
+        return true;
     } catch (error) {
-        console.error("Error al agregar el libro: ", error)
-        alert("Error al agregar el libro")
+        console.error("Error al agregar el libro: ", error);
+        return false;
     }
 }
 
@@ -34,26 +34,16 @@ export async function getBooks() {
     try {
         const querySnapshot = await getDocs(booksCollectionRef)
         let books = []
-        querySnapshot.forEach((doc) => {
+        querySnapshot.forEach((d) => {
             books.push({ 
-                id: doc.id, 
-                ...doc.data() 
+                id: d.id, 
+                ...d.data() 
             })
         })
         return books
     } catch (error) {
-        console.error("Error al obtener los libros: ", error)
-        alert("Error al obtener los libros")
-    }
-}
-
-export async function deleteBook(bookId) {
-    try {
-        await deleteDoc(doc(db, "books", bookId))
-        alert("Libro eliminado")
-    } catch (error) {
-        console.error("Error al eliminar el libro: ", error)
-        alert("Error al eliminar el libro")
+        console.error("Error al obtener los libros: ", error);
+        return [];
     }
 }
 
@@ -66,7 +56,17 @@ export async function updateBook(bookId, updatedData) {
         });
         return true;
     } catch (error) {
-        console.error("Error al actualizar:", error);
+        console.error("Error al actualizar el libro:", error);
+        return false;
+    }
+}
+
+export async function deleteBook(bookId) {
+    try {
+        await deleteDoc(doc(db, "books", bookId));
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar el libro: ", error);
         return false;
     }
 }
