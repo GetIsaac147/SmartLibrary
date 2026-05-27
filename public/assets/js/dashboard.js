@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase.js";
 import { getBooks } from "./books.js";
-import { logoutUser, ADMIN_EMAILS } from "./auth.js"; 
+import { logoutUser } from "./auth.js"; 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -17,10 +17,25 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  if (ADMIN_EMAILS.includes(user.email)) {
-    window.location.href = "dashboard-admin.html";
-    return;
-  }
+  const userRef = doc(db, "users", user.uid);
+const userSnap = await getDoc(userRef);
+
+if (userSnap.exists()) {
+
+    const data = userSnap.data();
+
+    // Si es admin lo mandamos al panel admin
+    if (data.role === "admin") {
+        window.location.href = "dashboard-admin.html";
+        return;
+    }
+
+    // Datos del lector
+    if(navUserName) navUserName.textContent = data.nombre || "Usuario";
+    if(userName) userName.textContent = data.nombre || "Usuario";
+    if(profileUserName) profileUserName.textContent = data.nombre || "Usuario";
+    if(userEmail) userEmail.textContent = user.email;
+}
 
   try {
     const userRef = doc(db, "users", user.uid);

@@ -222,16 +222,25 @@ logoutBtn?.addEventListener("click", async () => {
 });
 
 observarSesion(async (user) => {
-  if (!user) {
-    window.location.href = "./login.html";
-    return;
-  }
+  const userRef = doc(db, "users", user.uid);
+const userSnap = await getDoc(userRef);
 
-  if (!ADMIN_EMAILS.includes(user.email)) {
-    alert("No tienes permisos de administrador");
-    window.location.href = "./login.html";
-    return;
-  }
+if (!userSnap.exists()) {
+  window.location.href = "./login.html";
+  return;
+}
+
+const data = userSnap.data();
+
+if (data.role !== "admin") {
+  alert("No tienes permisos de administrador");
+  window.location.href = "./dashboard.html";
+  return;
+
+}
+
+import { db } from "./firebase.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const displayName = user.displayName || user.email;
 

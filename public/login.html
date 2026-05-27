@@ -33,30 +33,43 @@
 </div>
 
 <script type="module">
-import { loginUser, observarSesion, ADMIN_EMAILS } from "./assets/js/auth.js";
+import { loginUser } from "./assets/js/auth.js";
+import { db } from "./assets/js/firebase.js";
 
-observarSesion((user) => {
-  if (!user) return;
-  if (ADMIN_EMAILS.includes(user.email)) {
-    window.location.href = "dashboard-admin.html";
-  } else {
-    window.location.href = "dashboard.html";
-  }
-});
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-document.getElementById("loginForm").addEventListener("submit", async function(e){
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
     try {
-        await loginUser(email, password);
+
+        const user = await loginUser(email, password);
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            alert("Usuario no encontrado");
+            return;
+        }
+
+        const data = userSnap.data();
+
+        if (data.role === "admin") {
+            window.location.href = "dashboard-admin.html";
+        } else {
+            window.location.href = "dashboard.html";
+        }
+
     } catch(error) {
         alert("Datos incorrectos");
         console.error(error);
     }
+
 });
 </script>
 
