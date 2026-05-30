@@ -1,5 +1,6 @@
 import { observarSesion, logoutUser, ADMIN_EMAILS } from "./auth.js";
 import { createBook, getBooks, updateBook, deleteBook } from "./books.js";
+import { createAuthor, getAuthors, deleteAuthor} from "./authors.js";
 
 const userName      = document.getElementById("userName");
 const navUserName   = document.getElementById("navUserName");
@@ -42,6 +43,8 @@ const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const addModal  = bootstrap.Modal.getOrCreateInstance(document.getElementById("addBookModal"));
 const editModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("editBookModal"));
 const delModal  = bootstrap.Modal.getOrCreateInstance(document.getElementById("deleteBookModal"));
+
+const authorForm = document.getElementById("authorForm");
 
 function showEl(el)  { el?.classList.remove("d-none"); }
 function hideEl(el)  { el?.classList.add("d-none"); }
@@ -240,5 +243,66 @@ observarSesion(async (user) => {
   if (userEmail) userEmail.textContent = user.email;
 
   await loadBooks();
+  await loadAuthors();
+  await loadAuthorsSelect();
 });
 
+authorForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const author = {
+    name: document.getElementById("authorName").value,
+    lastName: document.getElementById("authorLastName").value
+  };
+  try {
+    await createAuthor(author)
+    authorForm.reset()
+    await loadAuthors()
+    await loadAuthorsSelect()
+    const modalElement = document.getElementById("addAuthorModal");
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
+  } catch (error) {
+    console.error("Error al agregar autor: ", error)
+    alert("Error al agregar autor")
+  }
+});
+
+async function loadAuthors() {
+  const authors = await getAuthors();
+  const tbody = document.getElementById("authorsTbody");
+
+  tbody.innerHTML = "";
+  authors.forEach((author, index) => {
+    tbody.innerHTML += `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${author.name}</td>
+      <td>${author.lastName}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="removeAuthor('${author.id}')">
+        <i class="bi bi-trash"></i>
+        </button>
+      </td>
+    </tr>
+    `
+  })
+}
+
+window.removeAuthor = async (id) => {
+  await deleteAuthor(id);
+  await loadAuthors();
+}
+
+async function loadAuthorsSelect() {
+  const authors = await getAuthors();
+  console.log("Autores cargados para select: ", authors)
+  
+  addAuthor.innerHTML = '<option value="" disabled selected>Selecciona un autor</option>';
+  editAuthor.innerHTML = '<option value="" disabled selected>Selecciona un autor</option>';
+
+  authors.forEach(author => {
+    const fullName = `${author.name} ${author.lastName}`
+    addAuthor.innerHTML += `<option value="${fullName}">${fullName}</option>`
+    editAuthor.innerHTML += `<option value="${fullName}">${fullName}</option>`
+  })
+}

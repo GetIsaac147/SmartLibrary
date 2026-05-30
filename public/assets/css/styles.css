@@ -129,14 +129,21 @@ box-shadow:0 0 45px rgba(0,198,255,.18)!important;
 .card p,.text-secondary{color:var(--text-muted)!important;}
 
 .form-control,input{
-background:transparent!important;
-border:none!important;
-border-bottom:2px solid #aaa!important;
-color:#fff!important;
-box-shadow:none!important;
+background: rgba(255,255,255,0.08) !important;
+border: 1px solid rgba(255,255,255,0.15) !important;
+border-radius: 12px !important;
+color:#fff !important;
+box-shadow:none !important;
+pointer-events:auto !important;
+padding: 12px !important;
 }
 
-.form-control:focus{border-bottom:2px solid var(--accent)!important;}
+.form-control:focus{
+background: rgba(255,255,255,0.12) !important;
+border: 1px solid var(--accent) !important;
+box-shadow: 0 0 10px rgba(0,198,255,.3) !important;
+color:#fff !important;
+}
 
 .modal-content{
 background:rgba(15,32,39,.92)!important;
@@ -286,4 +293,24 @@ main{padding:1.5rem 0;}
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 1px;
+}
+
+.modal {
+    z-index: 2000 !important;
+}
+
+.modal-backdrop {
+    z-index: 1990 !important;
+}
+
+.modal-content {
+    position: relative;
+    z-index: 2001 !important;
+}
+
+.modal input,
+.modal button,
+.modal textarea,
+.modal select {
+    pointer-events: auto !important;
 }
