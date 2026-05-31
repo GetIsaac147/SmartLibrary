@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getLoansByUser, returnLoan, createLoan } from "./loans.js";
 
+let nombreUsuarioActual = "Usuario";
 const navUserName = document.getElementById("navUserName");
 const userName = document.getElementById("userName");
 const profileUserName = document.getElementById("profileUserName");
@@ -33,6 +34,7 @@ onAuthStateChanged(auth, async (user) => {
     const userSnap = await getDoc(userRef);
     if (userSnap.exists()) {
       const data = userSnap.data();
+      nombreUsuarioActual = data.nombre || "Usuario";
       if(navUserName) navUserName.textContent = data.nombre || "Usuario";
       if(userName) userName.textContent = data.nombre || "Usuario";
       if(profileUserName) profileUserName.textContent = data.nombre || "Usuario";
@@ -54,9 +56,9 @@ async function cargarLibros(user) {
     }
 
     books.forEach((book) => {
-        // Creamos la columna
         const col = document.createElement("div");
-        col.className = "col-md-4 mb-4 book-card"; // Clase clave para el buscador
+        col.className = "col-md-4 mb-4 book-card"; 
+        
         
         const tieneCopias = book.available > 0;
         const botonAtributos = tieneCopias 
@@ -84,6 +86,19 @@ async function cargarLibros(user) {
                 const nuevaDisponibilidad = book.available - 1;
                 await updateBook(book.id, { available: nuevaDisponibilidad });
                 await createLoan(book, user); 
+                
+              const templateParams = {
+                user_name: nombreUsuarioActual, 
+                user_email: user.email,
+                book_title: book.title,
+                due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                admin_email: "smartlibrary.soporte@gmail.com" 
+              };
+              
+              emailjs.send('service_xmophh6', 'template_zv2uopy', templateParams)
+               .then(() => console.log("Correo enviado con éxito"))
+               .catch((error) => console.error("Error al enviar correo:", error));
+
                 await cargarPrestamos(user.uid);
                 await cargarLibros(user); 
             });
@@ -135,7 +150,6 @@ async function cargarPrestamos(uid) {
         `;
     });
 
-    // EVENTOS DE DEVOLUCIÓN (Dentro de la función para que se re-asignen siempre)
     document.querySelectorAll(".return-loan-btn").forEach((btn) => {
         btn.onclick = async () => {
             const loanId = btn.getAttribute("data-id");
@@ -164,12 +178,10 @@ if (logoutBtn) {
 if (bookSearch) {
     bookSearch.addEventListener("input", (e) => {
         const term = e.target.value.toLowerCase().trim();
-        // Buscamos todas las tarjetas con la clase que pusimos arriba
         const cards = document.querySelectorAll(".book-card");
         
         cards.forEach(card => {
             const text = card.innerText.toLowerCase();
-            // Si el término está vacío, mostramos todo. Si no, filtramos.
             if (term === "" || text.includes(term)) {
                 card.classList.remove("d-none");
             } else {
