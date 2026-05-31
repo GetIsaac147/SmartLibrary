@@ -1,5 +1,5 @@
 import { db } from "./firebase.js"
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, queryDoc, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
 const loanCollectionRef = collection(db, "loans")
 
