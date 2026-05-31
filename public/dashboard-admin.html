@@ -241,7 +241,6 @@
                       </div>
                     </div>
                   </div>
-
                   <div class="col-12">
                     <div class="stat-pill">
                       <div class="stat-pill-icon">
@@ -253,18 +252,86 @@
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
-
             </div>
           </div>
-        </div>
+        </div>  
 
         <div class="col-12">
           <div class="card info-card">
+            <div class="col-12"> 
+              <div class="card info-card"> 
+                <div class="card-body p-4"> 
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3"> 
+                    <div> 
+                      <div class="section-kicker">
+                        Autores
+                      </div> 
+                      <h3 class="mb-1 fw-bold"> 
+                        <i class="bi bi-person-lines-fill me-2" style="color:var(--accent);"></i> 
+                        Gestión de autores 
+                      </h3> 
+                      <p class="mb-0"> 
+                        Registra, edita o elimina autores del sistema. 
+                      </p> 
+                      <div class="input-group shadow-sm mt-3" style="max-width: 350px;"> 
+                        <span class="input-group-text"> 
+                          <i class="bi bi-search"></i> 
+                        </span> 
+                        <input type="text" id="searchAuthorInput" class="form-control" placeholder="Buscar autor..." > 
+                      </div> 
+                    </div> 
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAuthorModal" > 
+                      <i class="bi bi-plus-lg me-2"></i> 
+                      Nuevo autor 
+                    </button> 
+                  </div> 
+                  <div id="authorsAlert" class="alert alert-danger d-none" role="alert"></div> 
+                  <div id="authorsSuccess" class="alert alert-success d-none" role="alert"></div> 
+                  <div id="authorsLoading" class="loading-box d-none"> 
+                    <div class="spinner-border text-primary" role="status"></div> 
+                    <div> 
+                      <div class="fw-semibold">
+                        Cargando autores...
+                      </div> 
+                      <div class="small" style="color:var(--text-muted);"> 
+                        Consultando autores en Firestore. 
+                      </div> 
+                    </div> 
+                  </div> 
+                  <div id="authorsEmpty" class="d-none"> 
+                    <i class="bi bi-people"></i> 
+                    <h5 class="fw-bold mb-1"> 
+                      No hay autores registrados 
+                    </h5> 
+                    <p class="mb-3"> 
+                      Comienza agregando el primer autor. 
+                    </p> 
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAuthorModal" > 
+                      <i class="bi bi-plus-circle me-2"></i> 
+                      Agregar primer autor 
+                    </button> 
+                  </div>
+                  <div id="authorsTableWrap"> 
+                    <div class="book-table-wrap"> 
+                      <table class="table table-hover align-middle table-borderless text-white mb-0"> 
+                        <thead> 
+                          <tr> 
+                            <th>#</th> 
+                            <th>Nombre</th> 
+                            <th>Apellido</th>  
+                            <th class="text-center">Acciones</th> 
+                          </tr> 
+                        </thead> 
+                        <tbody id="authorsTbody"></tbody> 
+                      </table> 
+                    </div> 
+                  </div> 
+                </div> 
+              </div> 
+            </div>
             <div class="card-body p-4">
-
               <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                 <div>
                   <div class="section-kicker">Catálogo</div>
@@ -286,6 +353,7 @@
                   <i class="bi bi-plus-lg me-2"></i>Nuevo libro
                 </button>
               </div>
+
               
               <div id="booksAlert"   class="alert alert-danger  d-none" role="alert"></div>
               <div id="booksSuccess" class="alert alert-success d-none" role="alert"></div>
@@ -331,91 +399,9 @@
                   </table>
                 </div>
               </div>
-               <div class="d-flex justify-content-between align-items-center mb-4">
-
-    <div>
-      <div class="section-kicker">
-        Biblioteca
-      </div>
-
-      <h3 class="fw-bold">
-        <i class="bi bi-bookmark-check me-2"></i>
-        Préstamos registrados
-      </h3>
-
-      <p class="mb-0">
-        Consulta todos los préstamos almacenados en el sistema.
-      </p>
-    </div>
-
-    <div class="stat-pill">
-      <div class="stat-pill-icon">
-        <i class="bi bi-journal-check"></i>
-      </div>
-
-      <div>
-        <div class="stat-pill-label">
-          Total préstamos
-        </div>
-
-        <div id="totalLoans" class="stat-pill-value">
-          0
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div id="loansLoading" class="loading-box">
-    <div class="spinner-border text-primary"></div>
-    <div>
-      <div class="fw-semibold">
-        Cargando préstamos...
-      </div>
-    </div>
-  </div>
-
-  <div id="loansEmpty" class="d-none text-center py-5">
-    <i class="bi bi-book fs-1"></i>
-    <h5 class="fw-bold mt-3">
-      No existen préstamos registrados
-    </h5>
-  </div>
-
-  <div id="loansTableWrap" class="d-none">
-
-    <div class="book-table-wrap">
-
-      <table class="table table-hover align-middle table-borderless text-white mb-0">
-
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Libro</th>
-            <th>Lector</th>
-            <th>Fecha préstamo</th>
-            <th>Fecha límite</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-
-        <tbody id="loansTbody"></tbody>
-
-      </table>
-
-    </div>
-
-  </div>
-
-</div>
-
-  </div>
-</div>
             </div>
           </div>
-
         </div>
-
       </div>
     </div>
   </main>
@@ -424,7 +410,6 @@
   <div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg">
-
         <div class="modal-header border-0 pb-0">
           <div>
             <h5 class="modal-title fw-bold" id="addBookModalLabel">
@@ -435,10 +420,8 @@
           </div>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-
         <div class="modal-body pt-3">
           <div id="addBookAlert" class="alert alert-danger d-none" role="alert"></div>
-
           <form id="addBookForm" novalidate>
             <div class="mb-3">
               <label for="addTitle" class="form-label small" style="color:var(--text-muted);">Título <span class="text-danger">*</span></label>
@@ -446,7 +429,9 @@
             </div>
             <div class="mb-3">
               <label for="addAuthor" class="form-label small" style="color:var(--text-muted);">Autor <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="addAuthor" placeholder="Ej. Gabriel García Márquez" required>
+              <select class="form-select" id="addAuthor" required>
+                <option value="" disabled selected>Selecciona un autor</option>
+              </select>
             </div>
             <div class="mb-3">
               <label for="addIsbn" class="form-label small" style="color:var(--text-muted);">ISBN <span class="text-danger">*</span></label>
@@ -473,14 +458,57 @@
             </div>
           </form>
         </div>
-
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="addAuthorModal" tabindex="-1" aria-labelledby="addAuthorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h5 class="modal-title fw-bold" id="addAuthorModalLabel">
+              <i class="bi bi-person-plus me-2" style="color:var(--accent);"></i>
+              Agregar autor
+            </h5>
+            <p class="small mb-0 mt-1">
+              Completa los datos para registrar un nuevo autor.
+            </p>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar">
+          </button>
+        </div>
+        <div class="modal-body pt-3">
+          <div id="addAuthorAlert" class="alert alert-danger d-none" role="alert">
+          </div>
+          <form id="authorForm">
+            <div class="mb-3">
+              <label for="authorName" class="form-label small" style="color:var(--text-muted);">
+                Nombre del autor
+                <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="authorName" placeholder="Ej. Gabriel García Márquez" required>
+            </div>
+            <div class="mb-3">
+              <label for="authorLastName" class="form-label small" style="color:var(--text-muted);">
+                Apellido
+                <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="authorLastName" placeholder="Ej. García Márquez" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" id="addAuthorBtn" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle me-2"></i>
+                Registrar autor
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 
-
   <div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered"> 
       <div class="modal-content border-0 shadow-lg">
 
         <div class="modal-header border-0 pb-0">
@@ -505,7 +533,9 @@
             </div>
             <div class="mb-3">
               <label for="editAuthor" class="form-label small" style="color:var(--text-muted);">Autor <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="editAuthor" required>
+              <select class="form-select" id="editAuthor" required>
+                <option value="" disabled selected>Selecciona un autor</option>
+              </select>
             </div>
             <div class="mb-3">
               <label for="editIsbn" class="form-label small" style="color:var(--text-muted);">ISBN <span class="text-danger">*</span></label>

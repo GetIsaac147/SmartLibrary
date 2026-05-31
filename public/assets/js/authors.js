@@ -3,9 +3,9 @@ import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic
 
 const authorsCollectionRef = collection(db, "authors")
 
-export async function createAuthor(auhtor) {
+export async function createAuthor(author) {
     try {
-        await addDoc(authorCollectionRef, {
+        await addDoc(authorsCollectionRef, {
             name : author.name,
             lastName : author.lastName,
             createdAt : new Date(),
@@ -18,9 +18,9 @@ export async function createAuthor(auhtor) {
     }
 }
 
-export async function getAuthros() {
+export async function getAuthors() {
     try {
-        const querySnapshot = await getDocs(authorCollectionRef)
+        const querySnapshot = await getDocs(authorsCollectionRef)
         let authors = []
         querySnapshot.forEach((doc) => {
             authors.push({ 
@@ -32,6 +32,7 @@ export async function getAuthros() {
     } catch (error) {
         console.error("Error al obtener autores: ", error)
         alert("Error al obtener los autores")
+        return []
     }
 }
 
