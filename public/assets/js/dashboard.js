@@ -2,7 +2,7 @@ import { auth, db } from "./firebase.js";
 import { getBooks, updateBook } from "./books.js";
 import { logoutUser, ADMIN_EMAILS } from "./auth.js"; 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getLoansByUser, returnLoan, createLoan } from "./loans.js";
 
 let nombreUsuarioActual = "Usuario";
@@ -14,35 +14,95 @@ const booksContainer = document.getElementById("booksContainer");
 const userLoansContainer = document.getElementById("userLoansContainer");
 const logoutBtn = document.getElementById("logoutBtn");
 const bookSearch = document.getElementById("bookSearch");
+const editProfileForm = document.getElementById("editProfileForm");
+const editName = document.getElementById("editName");
+const editEmail = document.getElementById("editEmail");
+const profileAlert = document.getElementById("profileAlert");
+const profileSuccess = document.getElementById("profileSuccess");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  if (ADMIN_EMAILS.includes(user.email)) {
-    window.location.href = "dashboard-admin.html";
-    return;
-  }
-
-  await cargarPrestamos(user.uid);
-  await cargarLibros(user); 
-
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
-      const data = userSnap.data();
-      nombreUsuarioActual = data.nombre || "Usuario";
-      if(navUserName) navUserName.textContent = data.nombre || "Usuario";
-      if(userName) userName.textContent = data.nombre || "Usuario";
-      if(profileUserName) profileUserName.textContent = data.nombre || "Usuario";
-      if(userEmail) userEmail.textContent = user.email;
+    if (!user) {
+        window.location.href = "login.html";
+        return;
     }
-  } catch (error) {
-    console.error("Error al obtener perfil:", error);
-  }
+    if (ADMIN_EMAILS.includes(user.email)) {
+        window.location.href = "dashboard-admin.html";
+        return;
+    }
+    await cargarPrestamos(user.uid);
+    await cargarLibros(user); 
+    try {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            const data = userSnap.data();
+            nombreUsuarioActual = data.nombre || "Usuario";
+            if(navUserName) navUserName.textContent = data.nombre || "Usuario";
+            if(userName) userName.textContent = data.nombre || "Usuario";
+            if(profileUserName) profileUserName.textContent = data.nombre || "Usuario";
+            if(userEmail) userEmail.textContent = user.email;
+            if(editName) editName.value = data.nombre || "";
+            if(editEmail) editEmail.value = user.email;
+        }
+    } catch (error) {
+        console.error("Error al obtener perfil:", error);
+    }
+});
+
+editProfileForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    profileAlert.classList.add("d-none");
+    profileSuccess.classList.add("d-none");
+
+    const nuevoNombre = editName.value.trim();
+
+    if (!nuevoNombre) {
+        profileAlert.textContent = "El nombre es obligatorio";
+        profileAlert.classList.remove("d-none");
+        return;
+    }
+
+    try {
+        saveProfileBtn.disabled = true;
+
+        const user = auth.currentUser;
+
+        await updateDoc(
+            doc(db, "users", user.uid),
+            {
+                nombre: nuevoNombre
+            }
+        );
+
+        nombreUsuarioActual = nuevoNombre;
+
+        navUserName.textContent = nuevoNombre;
+        userName.textContent = nuevoNombre;
+        profileUserName.textContent = nuevoNombre;
+
+        profileSuccess.textContent = "Perfil actualizado correctamente";
+        profileSuccess.classList.remove("d-none");
+
+        setTimeout(() => {
+            const modalElement = document.getElementById("editProfileModal");
+            const modal = bootstrap.Modal.getInstance(modalElement);
+
+            if (modal) {
+                modal.hide();
+            }
+        }, 1500);
+
+    } catch (error) {
+        console.error(error);
+
+        profileAlert.textContent = "Error al actualizar perfil";
+        profileAlert.classList.remove("d-none");
+
+    } finally {
+        saveProfileBtn.disabled = false;
+    }
 });
 
 async function cargarLibros(user) { 
